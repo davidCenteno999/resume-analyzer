@@ -1,0 +1,37 @@
+# Virtual environment
+.venv/
+venv/
+env/
+.env/
+
+.env
+*.env
+.env.*
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# VSCode, PyCharm, and OS junk files
+.vscode/
+.idea/
+*.DS_Store
+*.swp
+*.bak
+.mypy_cache/
+
+# Test, build, and coverage outputs
+dist/
+build/
+*.egg-info/
+coverage/
+.coverage
+htmlcov/
+tmp/
+*.log
+
+# Credentials (add any others here)
+openai_api_key.txt
+
+# If you add other secrets or config: list them here
+
