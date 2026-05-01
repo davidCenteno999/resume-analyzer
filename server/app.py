@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+load_dotenv()
 from fastapi import FastAPI
 from server.routes.user_route import router as user_router
 from server.routes.resume_router import router as resume_router

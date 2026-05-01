@@ -1,5 +1,5 @@
 from server.services.ai_service.extract_resume_llm import ExtractResumeLLM
-from server.services.ai_service.open_ai.llm_resume_parser import OpenAIResumeParser
+from server.services.ai_service.github_models.llm_resume_parser import GitHubModelsResumeParser
 from server.services.resume_services.helpers.extract_text_resume import extract_text_from_pdf
 
 class CoreResumeService:
@@ -11,7 +11,7 @@ class CoreResumeService:
         # Extract text from the PDF
         content = await file.read()
         raw_text = extract_text_from_pdf(content)
-        resume_parser = ExtractResumeLLM(OpenAIResumeParser())
+        resume_parser = ExtractResumeLLM(GitHubModelsResumeParser())
         data = resume_parser.extract_with_llm(raw_text)
         return {
             "filename": file.filename,
