@@ -15,7 +15,7 @@ Return ONLY valid JSON with this structure:
     {{
       "title": string,
       "company": string,
-      "years": string,
+      "years": int,
       "description": string
     }}
   ],
@@ -32,6 +32,9 @@ Rules:
 - Do NOT invent information
 - If a field is missing, use null
 - Keep skills concise (e.g., "python", "react")
+- Use only straight apostrophes (') and never curly apostrophes (’) for the degree field
+- The "years" field in experience MUST be an integer representing the total duration
+- Calculate years in experience by finding the difference between the start and end dates in the resume (e.g., "Jan 2020 - Mar 2023" = 3, "2019 - 2022" = 3, "Present" means until now)
 - Return ONLY JSON, no explanation
 
 Resume:

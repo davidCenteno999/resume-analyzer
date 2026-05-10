@@ -4,7 +4,7 @@ from typing import List, Optional
 class Experience(BaseModel):
     title: Optional[str]
     company: Optional[str]
-    years: Optional[str]
+    years: Optional[int]
     description: Optional[str]
 
 class Education(BaseModel):
