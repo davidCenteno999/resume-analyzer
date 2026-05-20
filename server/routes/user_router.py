@@ -3,16 +3,16 @@ from server.schemas.user_schemas.user import User
 from server.schemas.user_schemas.user_create import UserCreate
 
 router = APIRouter(prefix="/users", tags=["Users"])
+from server.services.user_services.user_services import UserService
 
-
-@router.post("/", response_model=User)
-def create_user(user: UserCreate):
-    return {
-        "id": 1,
-        "username": user.username,
-        "email": user.email,
-        "created_at": "2026-04-16T12:00:00"
-    }
+@router.post("/", response_model=dict)
+async def create_user(user: UserCreate):
+    """
+    Register a new user via the service layer.
+    Returns MongoDB user document ID on success.
+    """
+    user_id = await UserService.register(user)
+    return {"id": user_id}
 
 
 @router.get("/{user_id}", response_model=User)

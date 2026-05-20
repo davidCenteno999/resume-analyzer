@@ -1,10 +1,15 @@
 from dotenv import load_dotenv
+from fastapi.concurrency import asynccontextmanager
+
+from server.database import db  # ensure MongoDB connection is established
 load_dotenv()
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from server.routes.user_route import router as user_router
+from server.routes.user_router import router as user_router
 from server.routes.resume_router import router as resume_router
+from server.routes.auth_router import router as auth_router
 import os
+
 
 def create_app():
     app = FastAPI()
@@ -17,6 +22,7 @@ def create_app():
     # Include routes
     app.include_router(user_router)
     app.include_router(resume_router)
+    app.include_router(auth_router)
 
     app.add_middleware(
         CORSMiddleware,
