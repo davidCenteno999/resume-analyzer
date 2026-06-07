@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Box, Heading, Input, Button, Stack, FormControl, FormLabel, Flex } from "@chakra-ui/react";
+import { Box, Heading, Input, Button, Stack, FormControl, FormLabel, Flex, Link } from "@chakra-ui/react";
 import { useAuth } from "../context/AuthContext";
+import { Link as RouterLink } from "react-router-dom";
 
 export default function Login() {
   const { login } = useAuth();
@@ -19,6 +20,7 @@ export default function Login() {
     const success = await login(form.username, form.password);
     if (!success) setError("Invalid credentials");
     setIsLoading(false);
+    navigate("/dashboard");
   };
 
   return (
@@ -32,7 +34,7 @@ export default function Login() {
             <Stack spacing={5}>
               <FormControl>
                 <FormLabel color="whiteAlpha.900">Email</FormLabel>
-                <Input 
+                <Input
                   bg="rgba(10,10,10,0.6)"
                   border="none"
                   color="white"
@@ -102,6 +104,14 @@ export default function Login() {
                 <Button size="sm" borderRadius="full" bg="whiteAlpha.700" _hover={{bg: "whiteAlpha.900"}}>
                   <i className="fab fa-github" />
                 </Button>
+              </Flex>
+              <Flex align="center" justify="center" mt={2}>
+                <Box as="span" color="whiteAlpha.700" fontSize="sm">
+                  Don't have an account?{" "}
+                  <Link as={RouterLink} to="/register" color="purple.200" fontWeight="bold">
+                    Register
+                  </Link>
+                </Box>
               </Flex>
             </Stack>
           </form>

@@ -2,12 +2,11 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError
 from server.utils.jwt_utils import decode_access_token
-from server.repositories.user_repository.get_user_by_email import get_user_by_email
 
 # Use /auth/login to get tokens
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_user_email(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -20,7 +19,5 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    user = await get_user_by_email(email)
-    if user is None:
-        raise credentials_exception
-    return user
+    
+    return email

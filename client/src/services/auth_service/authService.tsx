@@ -1,4 +1,4 @@
-import apiClient from '../api/apiClient';
+import apiClient from '../../api/apiClient.js';
 import {
   setAccessToken,
   getAccessToken,
@@ -7,10 +7,10 @@ import {
   setCurrentUser,
   getCurrentUser,
   clearTokens
-} from './TokenStorage';
+} from './tokenStorage.js';
 type LoginData = { email: string; password: string };
 type RegisterData = { email: string; password: string, [key: string]: any };
-type AuthResponse = { access_token: string; refresh_token?: string; user?: any };
+type AuthResponse = { access_token: string; refresh_token?: string;};
 class AuthService {
   // Login method
   static async login({ email, password }: LoginData) {
@@ -18,8 +18,7 @@ class AuthService {
       const res = await apiClient.post<AuthResponse>('/auth/login', new URLSearchParams({ username: email, password }));
       setAccessToken(res.data.access_token);
       if (res.data.refresh_token) setRefreshToken(res.data.refresh_token);
-      if (res.data.user) setCurrentUser(res.data.user);
-      return res.data;
+      
     } catch (error: any) {
       clearTokens();
       throw error.response?.data?.detail || error.message;
@@ -28,11 +27,10 @@ class AuthService {
   // Register, if endpoint exists
   static async register({ email, password, ...rest }: RegisterData) {
     try {
-      const res = await apiClient.post<AuthResponse>('/auth/register', { email, password, ...rest });
-      setAccessToken(res.data.access_token);
-      if (res.data.refresh_token) setRefreshToken(res.data.refresh_token);
-      if (res.data.user) setCurrentUser(res.data.user);
-      return res.data;
+      
+      
+      await apiClient.post('/users/', { username: "example", email, password });
+     
     } catch (error: any) {
       throw error.response?.data?.detail || error.message;
     }

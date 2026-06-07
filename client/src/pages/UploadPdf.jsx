@@ -16,12 +16,19 @@ export default function UploadPdf() {
   const fileInputRef = useRef();
   const toast = useToast();
 
+  const resetFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const onFileChange = (e) => {
     setError("");
     const chosen = e.target.files[0];
     if (chosen && chosen.type !== "application/pdf") {
       setError("Only PDF files are allowed.");
       setFile(null);
+      resetFileInput();
     } else {
       setFile(chosen);
     }
@@ -34,6 +41,7 @@ export default function UploadPdf() {
     if (chosen && chosen.type !== "application/pdf") {
       setError("Only PDF files are allowed.");
       setFile(null);
+      resetFileInput();
     } else {
       setFile(chosen);
     }
@@ -47,14 +55,32 @@ export default function UploadPdf() {
     e.preventDefault();
     if (!file) return;
 
+    if (skills.length === 0 || degrees.length === 0 || experiences.length === 0) {
+      const missing = [];
+      if (skills.length === 0) missing.push("at least one required skill");
+      if (degrees.length === 0) missing.push("at least one degree requirement");
+      if (experiences.length === 0) missing.push("at least one experience requirement");
+      const message = `Please add ${missing.join(", ")} before uploading.`;
+      setError(message);
+      toast({ title: "Missing job requirements", description: message, status: "warning", duration: 4000, isClosable: true });
+      return;
+    }
+
     setIsLoading(true);
     setError("");
 
+    const requirements = {
+      requiredSkills: skills,
+      degreeRequirements: degrees,
+      experienceRequirements: experiences,
+    };
+
     try {
-      const result = await resumeService.uploadResume(file);
+      const result = await resumeService.uploadResume(file, requirements);
       console.log("Upload result:", result);
       toast({ title: "Resume uploaded!", description: result.filename, status: "success", duration: 3000, isClosable: true });
       setFile(null);
+      resetFileInput();
     } catch (err) {
       setError(err.message || "Failed to upload resume");
       toast({ title: "Upload failed", description: err.message, status: "error", duration: 3000, isClosable: true });

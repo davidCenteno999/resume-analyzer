@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { API_BASE_URL } from '../utils/env';
-import { getAccessToken, setAccessToken, getRefreshToken, setRefreshToken, clearTokens } from '../auth/TokenStorage';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { getAccessToken, setAccessToken, getRefreshToken, setRefreshToken, clearTokens } from '../services/auth_service/tokenStorage';
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
