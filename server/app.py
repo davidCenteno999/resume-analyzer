@@ -8,6 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from server.routes.user_router import router as user_router
 from server.routes.resume_router import router as resume_router
 from server.routes.auth_router import router as auth_router
+from server.routes.analysis_router import router as analysis_router
+from server.repositories.resume_analysis_repository import ensure_indexes
 import os
 
 
@@ -23,6 +25,11 @@ def create_app():
     app.include_router(user_router)
     app.include_router(resume_router)
     app.include_router(auth_router)
+    app.include_router(analysis_router)
+
+    @app.on_event("startup")
+    async def create_analysis_indexes():
+        await ensure_indexes()
 
     app.add_middleware(
         CORSMiddleware,

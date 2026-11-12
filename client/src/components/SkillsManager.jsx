@@ -23,7 +23,7 @@ import {
 } from "@chakra-ui/react";
 import { FiPlus } from "react-icons/fi";
 
-export default function SkillsManager({ skills, setSkills, triggerButton }) {
+export default function SkillsManager({ skills, setSkills, triggerButton, label = "Skill" }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [newSkill, setNewSkill] = useState("");
 
@@ -61,18 +61,18 @@ export default function SkillsManager({ skills, setSkills, triggerButton }) {
         <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(4px)" />
         <ModalContent bg="white" borderRadius="xl" mx={4}>
           <ModalHeader pb={2}>
-            <Heading size="md" color="gray.800">Manage Required Skills</Heading>
+            <Heading size="md" color="gray.800">Manage Required {label}s</Heading>
           </ModalHeader>
           <ModalCloseButton color="gray.600" />
           <ModalBody pb={6}>
             <VStack spacing={4} align="stretch">
               <Box>
                 <Text fontSize="sm" fontWeight="medium" color="gray.600" mb={2}>
-                  Add New Skill
+                  Add New {label}
                 </Text>
                 <HStack>
                   <Input
-                    placeholder="Enter skill name"
+                    placeholder={`Enter ${label.toLowerCase()} name`}
                     value={newSkill}
                     onChange={(e) => setNewSkill(e.target.value)}
                     onKeyPress={handleKeyPress}

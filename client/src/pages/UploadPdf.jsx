@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Box, Heading, Input, Button, Stack, FormControl, FormLabel, Flex, Text, Icon, useToast, Spinner, Tag, TagLabel, Wrap, WrapItem } from "@chakra-ui/react";
 import { FiUploadCloud, FiPlus } from "react-icons/fi";
 import SkillsManager from "../components/SkillsManager";
@@ -12,9 +13,15 @@ export default function UploadPdf() {
   const [isLoading, setIsLoading] = useState(false);
   const [skills, setSkills] = useState([]);
   const [degrees, setDegrees] = useState([]);
+  const [tools, setTools] = useState([]);
   const [experiences, setExperiences] = useState([]);
   const fileInputRef = useRef();
   const toast = useToast();
+  const navigate = useNavigate();
+  const submissionKey = useRef(null);
+  const busy = useRef(false);
+  const isPdf = (chosen) => chosen && (chosen.type === "application/pdf" || (!chosen.type && chosen.name.toLowerCase().endsWith(".pdf")));
+  useEffect(() => { submissionKey.current = null; }, [skills, tools, degrees, experiences]);
 
   const resetFileInput = () => {
     if (fileInputRef.current) {
@@ -25,7 +32,8 @@ export default function UploadPdf() {
   const onFileChange = (e) => {
     setError("");
     const chosen = e.target.files[0];
-    if (chosen && chosen.type !== "application/pdf") {
+    submissionKey.current = null;
+    if (chosen && !isPdf(chosen)) {
       setError("Only PDF files are allowed.");
       setFile(null);
       resetFileInput();
@@ -38,7 +46,8 @@ export default function UploadPdf() {
     e.preventDefault();
     setError("");
     const chosen = e.dataTransfer.files[0];
-    if (chosen && chosen.type !== "application/pdf") {
+    submissionKey.current = null;
+    if (chosen && !isPdf(chosen)) {
       setError("Only PDF files are allowed.");
       setFile(null);
       resetFileInput();
@@ -53,7 +62,7 @@ export default function UploadPdf() {
 
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!file) return;
+    if (!file || busy.current) return;
 
     if (skills.length === 0 || degrees.length === 0 || experiences.length === 0) {
       const missing = [];
@@ -66,31 +75,36 @@ export default function UploadPdf() {
       return;
     }
 
+    busy.current = true;
     setIsLoading(true);
     setError("");
 
     const requirements = {
       requiredSkills: skills,
+      requiredTools: tools,
       degreeRequirements: degrees,
       experienceRequirements: experiences,
     };
 
     try {
-      const result = await resumeService.uploadResume(file, requirements);
-      console.log("Upload result:", result);
-      toast({ title: "Resume uploaded!", description: result.filename, status: "success", duration: 3000, isClosable: true });
+      submissionKey.current ||= crypto.randomUUID();
+      const result = await resumeService.uploadResume(file, requirements, submissionKey.current);
+      toast({ title: "Analysis saved", description: result.filename, status: "success", duration: 3000, isClosable: true });
       setFile(null);
       resetFileInput();
+      navigate(`/analyses/${result.id}`);
     } catch (err) {
-      setError(err.message || "Failed to upload resume");
-      toast({ title: "Upload failed", description: err.message, status: "error", duration: 3000, isClosable: true });
+      const message = typeof err.response?.data?.detail === "string" ? err.response.data.detail : err.message || "Analysis failed";
+      setError(message);
+      toast({ title: "Analysis failed", description: message, status: "error", duration: 4000, isClosable: true });
     } finally {
+      busy.current = false;
       setIsLoading(false);
     }
   };
 
   return (
-    <Flex width="100vw" height="100vh" align="center" justify="center" bgGradient="linear(to-tr, #834AF5 0%, #2F234F 100%)">
+    <Flex width="100%" minH="calc(100vh - 64px)" align="center" justify="center" bgGradient="linear(to-tr, #834AF5 0%, #2F234F 100%)" py={6}>
       <Box w={{ base: "98vw", md: "90vw", lg: "80vw", xl: "1200px" }} maxW="1200px" minH="90vh" shadow="2xl" borderRadius="2xl" overflow="hidden" bg="rgba(255,255,255,0.08)" display="flex" flexDir={{ base: "column", md: "row" }}>
         <Box flex="1" minH="100%" p={{ base: 8, md: 16 }} bgGradient="linear(to-tr, #f3c7f3 0%, #9457e0 100%)" display="flex" flexDir="column" justifyContent="center" minW="0">
           <Heading color="white" mb={1} fontSize="2xl" fontWeight="bold">Upload PDF</Heading>
@@ -108,9 +122,13 @@ export default function UploadPdf() {
                   textAlign="center"
                   color="whiteAlpha.700"
                   cursor="pointer"
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Select PDF resume or drop a PDF here"
                   transition="all 0.2s"
                   _hover={{ borderColor: "#ff69b4", bg: "rgba(10,10,10,0.8)" }}
                   onClick={() => fileInputRef.current.click()}
+                  onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); fileInputRef.current.click(); } }}
                   onDrop={handleDrop}
                   onDragOver={handleDragOver}
                 >
@@ -121,11 +139,12 @@ export default function UploadPdf() {
                     type="file"
                     accept="application/pdf,.pdf"
                     display="none"
+                    aria-label="Select PDF resume"
                     onChange={onFileChange}
                   />
                 </Box>
               </FormControl>
-              {error && <Box color="pink.200" fontSize="sm">{error}</Box>}
+              {error && <Box color="pink.200" fontSize="sm" role="alert">{error}</Box>}
               <Button
                 w="full"
                 type="submit"
@@ -141,7 +160,7 @@ export default function UploadPdf() {
                 mb={2}
                 disabled={!file || isLoading}
               >
-                {isLoading ? <Spinner color="white" /> : "Upload"}
+                {isLoading ? <Spinner color="white" /> : "Analyze resume"}
               </Button>
             </Stack>
           </form>
@@ -155,6 +174,11 @@ export default function UploadPdf() {
             <div>Get detailed feedback and insights on your PDF resume. Keep your profile fresh and competitive.</div>
           </Box>
           <Box mt="auto">
+            <Text color="white" fontWeight="bold" fontSize="md" mb={3}>Required Tools & Technologies</Text>
+            <Box bg="whiteAlpha.200" borderRadius="xl" p={4} mb={4}>
+              <Text color="whiteAlpha.700" fontSize="sm" mb={2}>{tools.length ? tools.join(", ") : "No tools specified (optional)"}</Text>
+              <SkillsManager skills={tools} setSkills={setTools} label="Tool" triggerButton={(onOpen) => <Button onClick={onOpen} size="sm" colorScheme="pink" variant="outline" color="pink.200">Manage Tools</Button>} />
+            </Box>
             <Text color="white" fontWeight="bold" fontSize="md" mb={3}>Required Skills</Text>
             <Box bg="whiteAlpha.200" borderRadius="xl" p={4}>
               {skills.length === 0 ? (

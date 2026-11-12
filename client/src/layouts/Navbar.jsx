@@ -9,7 +9,7 @@ export default function Navbar() {
   return (
     <Box bgGradient="linear(to-tr, #834AF5 0%, #2F234F 100%)" px={4} shadow="sm" position="sticky" top={0} zIndex={10}>
       <Flex h={16} alignItems="center">
-        <Heading size="md" as={Link} to="/" color="white">ResumeAnalyzer</Heading>
+        <Heading size="md" as={Link} to={user ? "/dashboard" : "/"} color="white">ResumeAnalyzer</Heading>
         <Spacer />
         <IconButton
           icon={colorMode === "light" ? "🌙" : "☀️"}

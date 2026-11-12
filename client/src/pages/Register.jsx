@@ -1,11 +1,9 @@
 import { useState } from "react";
-import { Box, Heading, Input, Button, Stack, FormControl, FormLabel, Flex, Link } from "@chakra-ui/react";
-import { useAuth } from "../context/AuthContext";
+import { Box, Heading, Input, Button, Stack, FormControl, FormLabel, Flex, Link, Text } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import AuthService from "../services/auth_service/authService";
 
 export default function Register() {
-  const { login } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "", confirmPassword: "" });
   const [error, setError] = useState(null);
@@ -42,6 +40,7 @@ export default function Register() {
           <Heading color="white" mb={1} fontSize="2xl" fontWeight="bold">Create an account</Heading>
           <Box mb={8} color="whiteAlpha.800" fontSize="sm">Join us now!</Box>
           <form onSubmit={handleSubmit}>
+            {error && <Text role="alert" color="red.900" mb={3}>{error}</Text>}
             <Stack spacing={5}>
               <FormControl>
                 <FormLabel color="whiteAlpha.900">Email</FormLabel>
@@ -124,25 +123,12 @@ export default function Register() {
             </Stack>
           </form>
         </Box>
-        {/* Right: Testimonial */}
+        {/* Right: product context */}
         <Box flex="1" minH="100%" minW="0" px={{ base: 8, md: 16 }} py={{ base: 8, md: 16 }} bgGradient="linear(to-tl, #181449 75%, #8a35ba 100%)" display="flex" flexDir="column" justifyContent="center" position="relative">
-          <Box color="white" fontWeight="bold" fontSize="xl" mb={4}>What's our <br/>Jobseekers Said.</Box>
-          <Box color="whiteAlpha.700" mb={8}>
-            <q>Search and find your dream job in one easier, fast event. Just browse a job and apply if you need it.</q>
-            <Box mt={5}>
-              <b>Max Partono</b> <Box as="span" ml={1} fontSize="xs" color="whiteAlpha.500">UI Designer at Google</Box>
-            </Box>
-            <Button size="xs" colorScheme="pink" mt={1} mr={2}>UI/UX</Button>
-            <Button size="xs" colorScheme="blue" mt={1}>Designer</Button>
-          </Box>
+          <Heading color="white" size="lg" mb={4}>Build your analysis history</Heading>
+          <Text color="whiteAlpha.800" mb={8}>Upload a resume, enter the position requirements, and keep each result in your own dashboard.</Text>
           <Box bg="whiteAlpha.300" px={7} py={5} borderRadius="2xl" mt="auto" maxW="sm" color="white" fontSize="sm" boxShadow="lg">
-            <div>Get your right job and right place apply now</div>
-            <div color="whiteAlpha.600">Be among the first founders to experience the website at its best.</div>
-            <Flex mt={3} gap={-2}>
-              <Box as="img" src="https://randomuser.me/api/portraits/men/32.jpg" boxSize="28px" borderRadius="full" border="2px solid white" />
-              <Box as="img" src="https://randomuser.me/api/portraits/women/44.jpg" boxSize="28px" borderRadius="full" border="2px solid white" ml={-2}/>
-              <Box as="img" src="https://randomuser.me/api/portraits/men/65.jpg" boxSize="28px" borderRadius="full" border="2px solid white" ml={-2}/>
-            </Flex>
+            <Text fontWeight="semibold">Private to your account</Text><Text color="whiteAlpha.800" mt={2}>Your saved analyses and statistics are tied to your login.</Text>
           </Box>
         </Box>
       </Box>

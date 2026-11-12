@@ -4,6 +4,8 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
 import UploadPdf from "../pages/UploadPdf";
+import History from "../pages/History";
+import AnalysisResults from "../pages/AnalysisResults";
 import ProtectedRoute from "../components/ProtectedRoute";
 
 export default function AppRoutes() {
@@ -22,6 +24,8 @@ export default function AppRoutes() {
           <UploadPdf />
         </ProtectedRoute>
       } />
+      <Route path="/history" element={<ProtectedRoute><History /></ProtectedRoute>} />
+      <Route path="/analyses/:analysisId" element={<ProtectedRoute><AnalysisResults /></ProtectedRoute>} />
       <Route path="*" element={<Home />} />
     </Routes>
   );

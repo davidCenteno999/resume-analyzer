@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Box, Heading, Input, Button, Stack, FormControl, FormLabel, Flex, Link } from "@chakra-ui/react";
+import { Box, Heading, Input, Button, Stack, FormControl, FormLabel, Flex, Link, Text } from "@chakra-ui/react";
 import { useAuth } from "../context/AuthContext";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, Navigate, useLocation, useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -19,9 +21,11 @@ export default function Login() {
     setError(null);
     const success = await login(form.username, form.password);
     if (!success) setError("Invalid credentials");
+    else navigate(location.state?.from || "/dashboard", { replace: true });
     setIsLoading(false);
-    navigate("/dashboard");
   };
+
+  if (user) return <Navigate to="/dashboard" replace />;
 
   return (
     <Flex width="100vw" height="100vh" align="center" justify="center" bgGradient="linear(to-tr, #834AF5 0%, #2F234F 100%)">
@@ -31,6 +35,7 @@ export default function Login() {
           <Heading color="white" mb={1} fontSize="2xl" fontWeight="bold">Welcome back</Heading>
           <Box mb={8} color="whiteAlpha.800" fontSize="sm">Please Enter your Account details</Box>
           <form onSubmit={handleSubmit}>
+            {error && <Text role="alert" color="red.900" mb={3}>{error}</Text>}
             <Stack spacing={5}>
               <FormControl>
                 <FormLabel color="whiteAlpha.900">Email</FormLabel>
@@ -68,15 +73,6 @@ export default function Login() {
                   _placeholder={{ color: "whiteAlpha.500" }}
                 />
               </FormControl>
-              <Flex justify="space-between" align="center">
-                <FormControl display="flex" alignItems="center" mb={0}>
-                  <Input type="checkbox" id="remember" mr={2} />
-                  <FormLabel htmlFor="remember" mb="0" color="whiteAlpha.800" fontSize="sm" fontWeight={400}>
-                    Keep me logged in
-                  </FormLabel>
-                </FormControl>
-                <Box color="whiteAlpha.700" fontSize="xs" as="button" bg="none" border="none" cursor="pointer" _hover={{ color: "purple.200" }}>Forgot Password</Box>
-              </Flex>
               <Button
                 w="full"
                 type="submit"
@@ -93,18 +89,6 @@ export default function Login() {
               >
                 Sign in
               </Button>
-              <Flex align="center" justify="center" gap={4} mt={2}>
-                <Box as="span" color="whiteAlpha.700" fontSize="sm">Or sign in with</Box>
-                <Button size="sm" borderRadius="full" bg="whiteAlpha.700" _hover={{bg: "whiteAlpha.900"}}>
-                  <i className="fab fa-google" />
-                </Button>
-                <Button size="sm" borderRadius="full" bg="whiteAlpha.700" _hover={{bg: "whiteAlpha.900"}}>
-                  <i className="fab fa-facebook-f" />
-                </Button>
-                <Button size="sm" borderRadius="full" bg="whiteAlpha.700" _hover={{bg: "whiteAlpha.900"}}>
-                  <i className="fab fa-github" />
-                </Button>
-              </Flex>
               <Flex align="center" justify="center" mt={2}>
                 <Box as="span" color="whiteAlpha.700" fontSize="sm">
                   Don't have an account?{" "}
@@ -116,25 +100,13 @@ export default function Login() {
             </Stack>
           </form>
         </Box>
-        {/* Right: Testimonial */}
+        {/* Right: product context */}
         <Box flex="1" minH="100%" minW="0" px={{ base: 8, md: 16 }} py={{ base: 8, md: 16 }} bgGradient="linear(to-tl, #181449 75%, #8a35ba 100%)" display="flex" flexDir="column" justifyContent="center" position="relative">
-          <Box color="white" fontWeight="bold" fontSize="xl" mb={4}>What's our <br/>Jobseekers Said.</Box>
-          <Box color="whiteAlpha.700" mb={8}>
-            <q>Search and find your dream job in one easier, fast event. Just browse a job and apply if you need it.</q>
-            <Box mt={5}>
-              <b>Max Partono</b> <Box as="span" ml={1} fontSize="xs" color="whiteAlpha.500">UI Designer at Google</Box>
-            </Box>
-            <Button size="xs" colorScheme="pink" mt={1} mr={2}>UI/UX</Button>
-            <Button size="xs" colorScheme="blue" mt={1}>Designer</Button>
-          </Box>
+          <Heading color="white" size="lg" mb={4}>Understand every resume</Heading>
+          <Text color="whiteAlpha.800" mb={8}>Compare a candidate's skills, education, and experience with your job requirements. Revisit every saved analysis from your dashboard.</Text>
           <Box bg="whiteAlpha.300" px={7} py={5} borderRadius="2xl" mt="auto" maxW="sm" color="white" fontSize="sm" boxShadow="lg">
-            <div>Get your right job and right place apply now</div>
-            <div color="whiteAlpha.600">Be among the first founders to experience the website at its best.</div>
-            <Flex mt={3} gap={-2}>
-              <Box as="img" src="https://randomuser.me/api/portraits/men/32.jpg" boxSize="28px" borderRadius="full" border="2px solid white" />
-              <Box as="img" src="https://randomuser.me/api/portraits/women/44.jpg" boxSize="28px" borderRadius="full" border="2px solid white" ml={-2}/>
-              <Box as="img" src="https://randomuser.me/api/portraits/men/65.jpg" boxSize="28px" borderRadius="full" border="2px solid white" ml={-2}/>
-            </Flex>
+            <Text fontWeight="semibold">One place for every analysis</Text>
+            <Text color="whiteAlpha.800" mt={2}>Search candidates, review matching details, and see activity over time.</Text>
           </Box>
         </Box>
       </Box>

@@ -1,25 +1,17 @@
-import { apiFetch } from "../api";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import apiClient from "../../api/apiClient";
 
 export const resumeService = {
-  async uploadResume(file, requirements) {
+  async uploadResume(file, requirements, key) {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("required_skills", JSON.stringify(requirements.requiredSkills));
+    formData.append("required_tools", JSON.stringify(requirements.requiredTools || []));
     formData.append("degree_requirements", JSON.stringify(requirements.degreeRequirements));
     formData.append("experience_requirements", JSON.stringify(requirements.experienceRequirements));
 
-    const res = await fetch(`${API_BASE_URL}/resume/upload-resume`, {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || "API Error");
-    }
-
-    return res.json();
+    return (await apiClient.post("/api/resume-analyses", formData, { headers: { "Idempotency-Key": key }, timeout: 120000 })).data;
   },
+  async list(params) { return (await apiClient.get("/api/resume-analyses", { params })).data; },
+  async detail(id) { return (await apiClient.get(`/api/resume-analyses/${id}`)).data; },
+  async statistics(period) { return (await apiClient.get("/api/resume-analyses/statistics", { params: { period } })).data; },
 };

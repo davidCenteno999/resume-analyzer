@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthService from "../services/auth_service/authService";
 import UserService from "../services/user_service/userService";
@@ -23,14 +23,6 @@ export function AuthProvider({ children }) {
   });
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = getAccessToken();
-    if (!token || isTokenExpired(token)) {
-      clearTokens();
-      setUser(null);
-    }
-  }, []);
-
   const login = async (username, password) => {
     try {
       await AuthService.login({ email: username, password });
@@ -41,6 +33,8 @@ export function AuthProvider({ children }) {
       return true;
     } catch (error) {
       console.error("Login failed:", error);
+      clearTokens();
+      setUser(null);
       return false;
     }
   };
@@ -58,6 +52,7 @@ export function AuthProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   return useContext(AuthContext);
 }

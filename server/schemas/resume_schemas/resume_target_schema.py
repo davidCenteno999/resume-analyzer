@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 
 class Experience(BaseModel):
@@ -17,5 +17,6 @@ class ResumeStructured(BaseModel):
     email: Optional[str]
     phone: Optional[str]
     skills: List[str]
+    tools: List[str] = Field(default_factory=list)
     experience: List[Experience]
     education: List[Education]
